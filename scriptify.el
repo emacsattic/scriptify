@@ -34,7 +34,12 @@
 
 ;;; Code:
 
-(defvar scriptify-shebang-alist
+(defgroup scriptify nil
+  "Make executable script out of current buffer contents."
+  :prefix "scriptify-"
+  :group 'convenience)
+
+(defcustom scriptify-shebang-alist
   '((ruby-mode . "#! /usr/bin/env ruby")
     (perl-mode . "#! /usr/bin/env perl")
     (cperl-mode . "#! /usr/bin/env perl")
@@ -53,12 +58,18 @@
     (emacs-lisp-mode . (lambda () (format "#! %s --script" (executable-find "emacs"))))
     (sh-mode . (lambda () (format "#! %s" (executable-find (symbol-name sh-shell))))))
   "Alist specifying associations between major modes and shebangs.
-In each alist elemet car is major mode symbol, cdr is either a
+In each alist element car is major mode symbol, cdr is either a
 string, representing shebang appropriate for given major mode, or
-function that return one.")
+function that return one."
+  :type '(alist :key-type symbol
+                :value-type (choice string function))
+  :group 'scriptify)
 
-(defvar scriptify-scripts-directory nil
-  "Directory to put scripts in.")
+(defcustom scriptify-scripts-directory nil
+  "Directory to put scripts in."
+  :type '(choice (const :tag "None" nil)
+                 (directory :must-match t))
+  :group 'scriptify)
 
 (defun scriptify ()
   "Make executable script out of current buffer.
