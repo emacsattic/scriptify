@@ -92,6 +92,49 @@
     (should
      (equal (scriptify--shebang-for-major-mode 'asm-mode) nil))))
 
+(ert-deftest new-basename-buffer-with-no-file ()
+  (with-temp-buffer
+    (should-not (buffer-file-name))
+
+    (rename-buffer "foo")
+    (should (string= (scriptify--new-basename) "foo"))
+
+    (rename-buffer "bar.pl")
+    (should (string= (scriptify--new-basename) "bar"))
+
+    (rename-buffer "  *quux*  ")
+    (should (string= (scriptify--new-basename) "quux"))))
+
+(ert-deftest new-basename-buffer-associated-with-file ()
+  (let* ((name "foo.rb")
+         (path (expand-file-name name "~")))
+    (should-not (file-exists-p path))
+
+    (with-temp-buffer
+      (rename-buffer name)
+      (setq buffer-file-name path)
+
+      (should (string= (scriptify--new-basename) "foo")))))
+
+(ert-deftest new-dirname-no-default-scripts-directory ()
+  (let ((default-directory "/tmp/")
+        scriptify-scripts-directory)
+    (with-temp-buffer
+      (should (string= default-directory
+                       (scriptify--new-dirname)))
+
+      (setq buffer-file-name "/var/foo")
+
+      (should (string= "/var/"
+                       (scriptify--new-dirname))))))
+
+(ert-deftest new-dirname-with-default-scripts-directory ()
+  (let ((default-directory "/tmp/")
+        (scriptify-scripts-directory "/var/"))
+    (with-temp-buffer
+      (should (string= scriptify-scripts-directory
+                       (scriptify--new-dirname))))))
+
 ;; Local variables:
 ;; flycheck-mode: nil
 ;; End:

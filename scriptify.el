@@ -56,6 +56,9 @@ In each alist elemet car is major mode symbol, cdr is either a
 string, representing shebang appropriate for given major mode, or
 function that return one.")
 
+(defvar scriptify-scripts-directory nil
+  "Directory to put scripts in.")
+
 (defun scriptify--add-shebang ()
   "Add shebang to the beginning of the current buffer if it is not already there."
   (unless (scriptify--shebang-present-p)
@@ -79,6 +82,44 @@ function that return one.")
       (setq shebang (funcall shebang)))
     (when (stringp shebang)
       shebang)))
+
+(defun scriptify--move-file ()
+  "Move script where it's supposed to be."
+  (when (and scriptify-scripts-directory
+             (not (file-directory-p scriptify-scripts-directory)))
+    (error "'%s' is not a valid directory"
+           scriptify-scripts-directory))
+
+  (let ((old-location (buffer-file-name))
+        (new-location (scriptify--new-full-name)))
+    (if (equal old-location new-location)
+        (save-buffer)
+      (when (file-exists-p new-location)
+        (error "Script '%s' already exists" new-location))
+      (if (and old-location (file-exists-p old-location))
+          (rename-file old-location new-location)
+        (write-file new-location)))))
+
+(defun scriptify--new-basename ()
+  "Return basename for script."
+  (replace-regexp-in-string
+   (rx (or (and string-start (+ (or "*" whitespace)))
+           (and (+ (or "*" whitespace)) string-end)))
+   ""
+   (file-name-base (buffer-name))))
+
+(defun scriptify--new-dirname ()
+  "Return directory in which to put script."
+  (file-name-as-directory
+   (or scriptify-scripts-directory
+       (and (buffer-file-name)
+            (file-name-directory (buffer-file-name)))
+       default-directory)))
+
+(defun scriptify--new-full-name ()
+  "Return new full name of script."
+  (expand-file-name (scriptify--new-basename)
+                    (scriptify--new-dirname)))
 
 (provide 'scriptify)
 
