@@ -4,7 +4,7 @@
 
 ;; Author: Victor Deryagin <vderyagin@gmail.com>
 ;; Created: 16 Apr 2013
-;; Version: 0.0.1
+;; Version: 0.1.0
 ;; Keywords: convenience files languages tools
 ;; X-URL: https://github.com/vderyagin/scriptify
 
