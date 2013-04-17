@@ -33,6 +33,42 @@
 
 ;;; Code:
 
+(defvar scriptify-shebang-alist
+  '((ruby-mode . "#! /usr/bin/env ruby")
+    (perl-mode . "#! /usr/bin/env perl")
+    (cperl-mode . "#! /usr/bin/env perl")
+    (python-mode . "#! /usr/bin/env python")
+    (php-mode . "#! /usr/bin/env php")
+    (js-mode . "#! /usr/bin/env node")
+    (js2-mode . "#! /usr/bin/env node")
+    (js3-mode . "#! /usr/bin/env node")
+    (lua-mode . "#! /usr/bin/env lua")
+    (io-mode . "#! /usr/bin/env io")
+    (groovy-mode . "#! /usr/bin/env groovy")
+    (haskell-mode . "#! /usr/bin/env runhaskell")
+    (scala-mode . "#! /usr/bin/env scala\n!#")
+    (awk-mode . (lambda () (format "#! %s -f" (executable-find "awk"))))
+    (lisp-mode . (lambda () (format "#! %s --script" (executable-find "sbcl"))))
+    (emacs-lisp-mode . (lambda () (format "#! %s --script" (executable-find "emacs"))))
+    (sh-mode . (lambda () (format "#! %s" (executable-find (symbol-name sh-shell))))))
+  "Alist specifying associations between major modes and shebangs.
+In each alist elemet car is major mode symbol, cdr is either a
+string, representing shebang appropriate for given major mode, or
+function that return one.")
+
+(defun scriptify--add-shebang ()
+  "Add shebang to the beginning of the current buffer if it is not already there."
+  (unless (scriptify--shebang-present-p)
+    (let ((shebang
+           (cdr (assoc major-mode scriptify-shebang-alist))))
+      (when (functionp shebang)
+        (setq shebang (funcall shebang)))
+      (unless (stringp shebang)
+        (error "No valid shebang for `%s'" major-mode))
+      (save-excursion
+        (goto-char (point-min))
+        (insert shebang "\n")))))
+
 (defun scriptify--shebang-present-p ()
   "Return t if current buffer includes shebang, nil otherwise."
   (and
