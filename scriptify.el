@@ -71,6 +71,7 @@ function that return one."
                  (directory :must-match t))
   :group 'scriptify)
 
+;;;###autoload
 (defun scriptify ()
   "Make executable script out of current buffer.
 
