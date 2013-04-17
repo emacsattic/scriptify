@@ -39,6 +39,12 @@
   :prefix "scriptify-"
   :group 'convenience)
 
+(defcustom scriptify-scripts-directory nil
+  "Directory to put scripts in."
+  :type '(choice (const :tag "None" nil)
+                 (directory :must-match t))
+  :group 'scriptify)
+
 (defcustom scriptify-shebang-alist
   '((ruby-mode . "#! /usr/bin/env ruby")
     (perl-mode . "#! /usr/bin/env perl")
@@ -63,12 +69,6 @@ string, representing shebang appropriate for given major mode, or
 function that return one."
   :type '(alist :key-type symbol
                 :value-type (choice string function))
-  :group 'scriptify)
-
-(defcustom scriptify-scripts-directory nil
-  "Directory to put scripts in."
-  :type '(choice (const :tag "None" nil)
-                 (directory :must-match t))
   :group 'scriptify)
 
 ;;;###autoload
