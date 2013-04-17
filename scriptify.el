@@ -25,8 +25,8 @@
 
 ;;; Commentary:
 
-;; Make executable script out of current buffer.
-
+;; Make executable script out of current buffer contents.
+;;
 ;; * insert shebang
 ;; * chop off filename extension
 ;; * move to directory for scripts (optional)
