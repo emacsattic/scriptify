@@ -8,7 +8,7 @@ BYTE_CODE=*.elc
 COMPILE=--eval "(setq byte-compile-error-on-warn t)" --batch --funcall batch-byte-compile-if-not-done $(SOURCE_FILES)
 RUN_TESTS=--load $(TEST_FILES) --batch --funcall ert-run-tests-batch-and-exit
 
-all: compile test-travis test
+all: compile test-travis test clean
 
 compile:
 	$(EMACS_QUICK) $(COMPILE)
