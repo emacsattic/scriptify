@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/vderyagin/scriptify.png?branch=master)](https://travis-ci.org/vderyagin/scriptify)
+
 # About #
 
 Scriptify makes it extremely easy to go from text in buffer to runnable script.
