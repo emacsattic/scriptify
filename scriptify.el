@@ -33,6 +33,12 @@
 
 ;;; Code:
 
+(defun scriptify--shebang-present-p ()
+  "Return t if current buffer includes shebang, nil otherwise."
+  (and
+   (> (point-max) 3)
+   (string= "#!" (buffer-substring-no-properties 1 3))))
+
 (provide 'scriptify)
 
 ;;; scriptify.el ends here
