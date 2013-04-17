@@ -1,4 +1,4 @@
-EMACS ?= emacs
+EMACS=emacs
 EMACS_QUICK=$(EMACS) --quick --directory .
 
 SOURCE_FILES=*.el
