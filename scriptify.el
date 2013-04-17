@@ -59,6 +59,18 @@ function that return one.")
 (defvar scriptify-scripts-directory nil
   "Directory to put scripts in.")
 
+(defun scriptify ()
+  "Make executable script out of current buffer.
+
+* insert shebang according to `scriptify-shebang-alist'
+* chop off filename extension
+* move to `scriptify-scripts-directory' (if set)
+* make executable."
+  (interactive)
+  (scriptify--add-shebang)
+  (scriptify--move-file)
+  (scriptify--make-file-executable (buffer-file-name)))
+
 (defun scriptify--add-shebang ()
   "Add shebang to the beginning of the current buffer if it is not already there."
   (unless (scriptify--shebang-present-p)
@@ -85,10 +97,7 @@ function that return one.")
 
 (defun scriptify--move-file ()
   "Move script where it's supposed to be."
-  (when (and scriptify-scripts-directory
-             (not (file-directory-p scriptify-scripts-directory)))
-    (error "'%s' is not a valid directory"
-           scriptify-scripts-directory))
+  (scriptify--check-scripts-directory)
 
   (let ((old-location (buffer-file-name))
         (new-location (scriptify--new-full-name)))
@@ -120,6 +129,21 @@ function that return one.")
   "Return new full name of script."
   (expand-file-name (scriptify--new-basename)
                     (scriptify--new-dirname)))
+
+(defun scriptify--make-file-executable (filename)
+  "Make file FILENAME executable."
+  (let* ((file (expand-file-name filename))
+         (modes (file-modes file))
+         (new-modes (file-modes-symbolic-to-number "u+x" modes)))
+    (set-file-modes file new-modes)))
+
+(defun scriptify--check-scripts-directory ()
+  "Check if `scriptify-scripts-directory' is valid.
+Raises error if it is neither nil nor valid directory on
+filesystem."
+  (let ((dir scriptify-scripts-directory))
+    (when (and dir (not (file-directory-p dir)))
+      (error "'%s' is not a valid directory" dir))))
 
 (provide 'scriptify)
 

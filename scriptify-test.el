@@ -135,6 +135,15 @@
       (should (string= scriptify-scripts-directory
                        (scriptify--new-dirname))))))
 
-;; Local variables:
-;; flycheck-mode: nil
-;; End:
+(ert-deftest check-scripts-directory ()
+  (let (scriptify-scripts-directory)
+    (scriptify--check-scripts-directory)
+
+    (setq scriptify-scripts-directory "/")
+    (scriptify--check-scripts-directory)
+
+    (setq scriptify-scripts-directory 42)
+    (should-error (scriptify--check-scripts-directory))
+
+    (setq scriptify-scripts-directory "/non/existant/dir")
+    (should-error (scriptify--check-scripts-directory))))
