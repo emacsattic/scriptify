@@ -73,6 +73,25 @@
       (should (string= "#! /opt/perl -w\n"
                        (buffer-string))))))
 
+(ert-deftest shebang-for-major-mode ()
+  (let ((scriptify-shebang-alist
+         '((perl-mode . "#! /usr/bin/env perl")
+           (js-mode . "#! /usr/bin/env node")
+           (lisp-mode . (lambda ()
+                          (format "#! %s --script"
+                                  "/opt/bin/sbcl"))))))
+    (should
+     (equal (scriptify--shebang-for-major-mode 'perl-mode)
+            "#! /usr/bin/env perl"))
+    (should
+     (equal (scriptify--shebang-for-major-mode 'js-mode)
+            "#! /usr/bin/env node"))
+    (should
+     (equal (scriptify--shebang-for-major-mode 'lisp-mode)
+            "#! /opt/bin/sbcl --script"))
+    (should
+     (equal (scriptify--shebang-for-major-mode 'asm-mode) nil))))
+
 ;; Local variables:
 ;; flycheck-mode: nil
 ;; End:

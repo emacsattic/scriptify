@@ -59,11 +59,8 @@ function that return one.")
 (defun scriptify--add-shebang ()
   "Add shebang to the beginning of the current buffer if it is not already there."
   (unless (scriptify--shebang-present-p)
-    (let ((shebang
-           (cdr (assoc major-mode scriptify-shebang-alist))))
-      (when (functionp shebang)
-        (setq shebang (funcall shebang)))
-      (unless (stringp shebang)
+    (let ((shebang (scriptify--shebang-for-major-mode major-mode)))
+      (unless shebang
         (error "No valid shebang for `%s'" major-mode))
       (save-excursion
         (goto-char (point-min))
@@ -74,6 +71,14 @@ function that return one.")
   (and
    (> (point-max) 3)
    (string= "#!" (buffer-substring-no-properties 1 3))))
+
+(defun scriptify--shebang-for-major-mode (mode)
+  "Return shebang appropriate for major mode MODE as a string, nil if not found."
+  (let ((shebang (cdr (assoc mode scriptify-shebang-alist))))
+    (when (functionp shebang)
+      (setq shebang (funcall shebang)))
+    (when (stringp shebang)
+      shebang)))
 
 (provide 'scriptify)
 
