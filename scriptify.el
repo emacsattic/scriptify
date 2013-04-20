@@ -111,7 +111,6 @@ function that return one."
 (defun scriptify--move-file ()
   "Move script where it's supposed to be."
   (scriptify--check-scripts-directory)
-
   (let ((old-location (buffer-file-name))
         (new-location (scriptify--new-full-name)))
     (if (equal old-location new-location)
@@ -120,7 +119,8 @@ function that return one."
         (error "Script '%s' already exists" new-location))
       (if (and old-location (file-exists-p old-location))
           (rename-file old-location new-location)
-        (write-file new-location)))))
+        (write-file new-location))
+      (message "Saved as '%s'" (abbreviate-file-name new-location)))))
 
 (defun scriptify--new-basename ()
   "Return basename for script."
