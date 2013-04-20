@@ -80,9 +80,11 @@ function that return one."
 * move to `scriptify-scripts-directory' (if set)
 * make executable."
   (interactive)
-  (scriptify--add-shebang)
-  (scriptify--move-file)
-  (scriptify--make-file-executable (buffer-file-name)))
+  (let (new-name)
+    (scriptify--add-shebang)
+    (setq new-name (scriptify--move-file))
+    (scriptify--make-file-executable (buffer-file-name))
+    (message "Saved as '%s'" (abbreviate-file-name new-name))))
 
 (defun scriptify--add-shebang ()
   "Add shebang to the beginning of the current buffer if it is not already there."
@@ -109,7 +111,7 @@ function that return one."
       shebang)))
 
 (defun scriptify--move-file ()
-  "Move script where it's supposed to be."
+  "Move script where it's supposed to be, return its new location."
   (scriptify--check-scripts-directory)
   (let ((old-location (buffer-file-name))
         (new-location (scriptify--new-full-name)))
@@ -119,8 +121,8 @@ function that return one."
         (error "Script '%s' already exists" new-location))
       (if (and old-location (file-exists-p old-location))
           (rename-file old-location new-location)
-        (write-file new-location))
-      (message "Saved as '%s'" (abbreviate-file-name new-location)))))
+        (write-file new-location)))
+    new-location))
 
 (defun scriptify--new-basename ()
   "Return basename for script."
