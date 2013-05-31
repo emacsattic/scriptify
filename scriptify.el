@@ -58,7 +58,9 @@
     (io-mode . "#! /usr/bin/env io")
     (groovy-mode . "#! /usr/bin/env groovy")
     (haskell-mode . "#! /usr/bin/env runhaskell")
-    (scala-mode . "#! /usr/bin/env scala\n!#")
+    (scala-mode . (lambda () (format "#! /usr/bin/env %s\n!#"
+                                (cond ((executable-find "scalas") "scalas")
+                                      (t "scala")))))
     (awk-mode . (lambda () (format "#! %s -f" (executable-find "awk"))))
     (lisp-mode . (lambda () (format "#! %s --script" (executable-find "sbcl"))))
     (emacs-lisp-mode . (lambda () (format "#! %s --script" (executable-find "emacs"))))
